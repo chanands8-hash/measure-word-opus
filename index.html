@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🌈 量詞小樂園 — 幼兒中文學習遊戲</title>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pink: #FF8EAF;
+            --yellow: #FFD93D;
+            --blue: #4FBFFF;
+            --green: #4ADE80;
+            --purple: #B794F4;
+            --orange: #FF9F43;
+            --bg-color: #FFF5F7;
+            --text-main: #4A4A4A;
+            --white: #FFFFFF;
+            --shadow-sm: 0 4px 0 rgba(0,0,0,0.1);
+            --shadow-lg: 0 12px 24px rgba(0,0,0,0.08);
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'M PLUS Rounded 1c', 'Noto Sans TC', sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 20px 20px, #FFD1DC 2px, transparent 2px),
+                radial-gradient(circle at 60px 60px, #FFD1DC 2px, transparent 2px);
+            background-size: 80px 80px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            color: var(--text-main);
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 500px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 15px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ----- 頂部資訊列 ----- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--white);
+            padding: 12px 20px;
+            border-radius: 25px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 20px;
+            border: 3px solid #FFF;
+        }
+
+        .mascot-avatar {
+            font-size: 2rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-5px) rotate(5deg); }
+        }
+
+        .score-board {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--orange);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ----- 可愛進度條 ----- */
+        .progress-wrapper {
+            margin-bottom: 20px;
+            padding: 0 10px;
+        }
+        .progress-bar {
+            height: 16px;
+            background: #FFE4E6;
+            border-radius: 20px;
+            position: relative;
+            border: 2px solid #FFAFC4;
+            overflow: visible;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--yellow), var(--orange));
+            border-radius: 20px;
+            width: 0%;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        .progress-star {
+            position: absolute;
+            right: -15px;
+            top: -12px;
+            font-size: 1.8rem;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+            transition: var(--transition);
+        }
+
+        /* ----- 問題卡片 ----- */
+        .card {
+            background: var(--white);
+            border-radius: 35px;
+            padding: 30px 20px;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+            border: 4px solid #FFF0F5;
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .q-badge {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--purple);
+            color: white;
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-weight: 900;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 0 #9F7AEA;
+            border: 2px solid white;
+        }
+
+        .q-emoji {
+            font-size: 6.5rem;
+            margin: 15px 0;
+            display: inline-block;
+            filter: drop-shadow(0 8px 10px rgba(0,0,0,0.15));
+            animation: popInEmoji 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popInEmoji {
+            0% { transform: scale(0.5) rotate(-10deg); opacity: 0; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .q-text-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .q-text {
+            font-size: 2.4rem;
+            font-weight: 900;
+            margin: 10px 0;
+            color: var(--text-main);
+        }
+
+        .blank {
+            display: inline-block;
+            min-width: 80px;
+            border-bottom: 5px dashed #CBD5E1;
+            color: #94A3B8;
+            margin: 0 5px;
+            padding-bottom: 5px;
+        }
+
+        /* ----- 語音按鈕 ----- */
+        .speak-btn {
+            background: #F1F5F9;
+            border: 2px solid #CBD5E1;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            font-size: 1.6rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 0 #CBD5E1;
+            color: var(--blue);
+            padding-left: 4px; /* 微調 emoji 位置 */
+        }
+        .speak-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #CBD5E1;
+            background: #E2E8F0;
+        }
+        .speak-btn:hover {
+            background: #E0F2FE;
+            border-color: #7DD3FC;
+            box-shadow: 0 4px 0 #7DD3FC;
+        }
+
+        .q-hint {
+            color: #94A3B8;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-top: 10px;
+            background: #F1F5F9;
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 15px;
+        }
+
+        /* ----- 立體按鈕網格 ----- */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            padding: 5px;
+        }
+
+        .opt-btn {
+            background: var(--white);
+            border: 3px solid #E2E8F0;
+            border-bottom-width: 8px;
+            padding: 20px 10px;
+            font-size: 3rem;
+            font-weight: 900;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            color: var(--text-main);
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+            position: relative;
+        }
+        
+        .opt-btn:active { 
+            transform: translateY(5px); 
+            border-bottom-width: 3px; 
+            margin-bottom: 5px;
+        }
+
+        .opt-btn.correct { 
+            background: #DCFCE7; 
+            border-color: var(--green); 
+            color: #166534; 
+            border-bottom-color: #22C55E;
+        }
+        
+        .opt-btn.wrong { 
+            background: #FEE2E2; 
+            border-color: var(--pink); 
+            color: #991B1B; 
+            border-bottom-color: #F43F5E;
+        }
+
+        /* ----- 反饋彈窗 ----- */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            padding: 20px;
+        }
+        .overlay.show { display: flex; animation: fadeIn 0.3s; }
+
+        .modal {
+            background: var(--white);
+            border-radius: 40px;
+            padding: 40px 30px;
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            border: 6px solid #FFF;
+            transform: scale(0.8);
+            animation: popIn 0.4s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn { to { transform: scale(1); } }
+
+        .modal-icon { font-size: 5rem; margin-bottom: 10px; display: block; }
+        .modal-title { font-size: 2.2rem; font-weight: 900; margin-bottom: 15px; }
+        
+        .sentence-box {
+            background: #F8FAFC;
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 2rem;
+            font-weight: 900;
+            border: 2px dashed #CBD5E1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .modal-desc { font-size: 1.3rem; color: #64748B; margin-bottom: 25px; font-weight: 700; line-height: 1.4; }
+
+        .btn-main {
+            background: var(--blue);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 1.6rem;
+            font-weight: 900;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #0284C7;
+            transition: all 0.1s ease;
+            width: 100%;
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+        }
+        .btn-main:active { transform: translateY(4px); box-shadow: 0 2px 0 #0284C7; }
+        .btn-main.orange { background: var(--orange); box-shadow: 0 6px 0 #EA580C; }
+        .btn-main.orange:active { box-shadow: 0 2px 0 #EA580C; }
+
+        /* ----- 開始與結算畫面 ----- */
+        #start-screen, #result-screen { display: none; text-align: center; margin: auto; }
+        
+        .logo-wrapper {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .company-logo {
+            height: 60px;
+            max-width: 90%;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
+        }
+
+        .game-title {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--pink);
+            text-shadow: 3px 3px 0px #FFF, 5px 5px 0px rgba(255, 142, 175, 0.3);
+            margin-bottom: 10px;
+        }
+
+        .lvl-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .lvl-btn {
+            background: var(--white);
+            border: 3px solid #E2E8F0;
+            border-radius: 25px;
+            padding: 15px;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: var(--transition);
+        }
+        .lvl-btn.active {
+            background: #F3E8FF;
+            border-color: var(--purple);
+            color: #7E22CE;
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(183, 148, 244, 0.4);
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- ===== 開始畫面 ===== -->
+        <div id="start-screen">
+            <div class="card" style="padding: 40px 20px;">
+                <div class="logo-wrapper">
+                    <img src="logo.png" alt="開心學坊Logo" class="company-logo">
+                </div>
+                <span class="q-emoji">🦉</span>
+                <h1 class="game-title">量詞小樂園</h1>
+                <p style="font-size: 1.3rem; color: #64748B; font-weight: 700;">小朋友，小貓頭鷹陪你學量詞！</p>
+                <p style="font-size: 1rem; color: var(--pink); font-weight: 900; margin-top:5px;">🔊 已加入廣東話發音功能</p>
+                
+                <div class="lvl-container">
+                    <div class="lvl-btn active" onclick="setLvl('easy', this)">🌱 簡單 (適合初學)</div>
+                    <div class="lvl-btn" onclick="setLvl('medium', this)">🌿 普通 (稍微挑戰)</div>
+                    <div class="lvl-btn" onclick="setLvl('hard', this)">🌳 挑戰 (我是高手)</div>
+                </div>
+
+                <button class="btn-main orange" onclick="initGame()">開始玩啦！🎮</button>
+            </div>
+        </div>
+
+        <!-- ===== 遊戲畫面 ===== -->
+        <div id="game-screen" class="hidden">
+            <div class="header">
+                <div class="mascot-avatar">🦉</div>
+                <div class="score-board">
+                    <span>⭐</span> <span id="score">0</span>
+                </div>
+            </div>
+
+            <!-- 可愛進度條 -->
+            <div class="progress-wrapper">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill">
+                        <span class="progress-star">🌟</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" id="q-card">
+                <div class="q-badge">第 <span id="curr-idx">1</span> 題</div>
+                <span id="display-emoji" class="q-emoji">🐶</span>
+                <div class="q-text-container">
+                    <div class="q-text">一 <span class="blank" id="blank-text">？</span> <span id="display-noun">狗</span></div>
+                    <!-- 加入語音按鈕 -->
+                    <button class="speak-btn" id="btn-speak-q" title="聽發音">🔊</button>
+                </div>
+                <div class="q-hint" id="display-hint">點選下面最適合的字</div>
+            </div>
+
+            <div class="options-grid" id="options"></div>
+        </div>
+
+        <!-- ===== 結算畫面 ===== -->
+        <div id="result-screen">
+            <div class="card" style="padding: 40px 20px;">
+                <span id="res-icon" class="modal-icon">🏆</span>
+                <h2 id="res-title" class="modal-title">太棒了！</h2>
+                <div style="font-size: 4.5rem; font-weight: 900; color: var(--orange); margin: 10px 0; text-shadow: 2px 2px 0 #FFF;">
+                    <span id="res-score">100</span>分
+                </div>
+                <div id="res-stars" style="font-size: 3rem; margin-bottom: 20px;">⭐⭐⭐</div>
+                <p id="res-desc" class="modal-desc">小貓頭鷹為你拍拍手！</p>
+                <button class="btn-main" onclick="location.reload()">再玩一次 🔄</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 反饋彈窗 ===== -->
+    <div class="overlay" id="feedback-overlay">
+        <div class="modal">
+            <span id="fb-icon" class="modal-icon">✅</span>
+            <h2 id="fb-title" class="modal-title">答啱咗！</h2>
+            <div class="sentence-box">
+                <div>一 <span id="fb-ans" style="color:var(--green)">隻</span> <span id="fb-noun">狗</span></div>
+                <!-- 加入語音按鈕 -->
+                <button class="speak-btn" id="btn-speak-fb" title="聽發音" style="width: 40px; height: 40px; font-size: 1.2rem;">🔊</button>
+            </div>
+            <p id="fb-msg" class="modal-desc"></p>
+            <button class="btn-main orange" onclick="closeFeedback()">下一題 ➜</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 廣東話語音功能 (Web Speech API) ---
+        let voices = [];
+        
+        // 載入語音庫 (處理非同步加載)
+        window.speechSynthesis.onvoiceschanged = () => {
+            voices = window.speechSynthesis.getVoices();
+        };
+
+        function speakCantonese(text) {
+            if (!('speechSynthesis' in window)) return;
+            
+            // 停止當前正在播放的聲音，避免重疊
+            window.speechSynthesis.cancel();
+            
+            // 【語音修正】利用同音字修正系統 TTS 讀錯的字
+            // 「棵」(fo2) 經常被系統誤讀，用同音字「火」代替發音
+            let spokenText = text.replace(/棵/g, '火'); 
+            
+            // 過濾掉 Emoji，以免語音引擎讀出「笑臉」等奇怪詞語
+            const cleanText = spokenText.replace(/[^\u4e00-\u9fa5，。！；？、a-zA-Z0-9]/g, '');
+            
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = 'zh-HK'; // 設定為香港粵語
+            utterance.rate = 0.85;    // 語速稍慢，適合小朋友聽
+            utterance.pitch = 1.1;    // 音調稍高，比較可愛
+            
+            // 嘗試強制選擇廣東話語音包 (如果裝置有提供)
+            if (voices.length > 0) {
+                const hkVoice = voices.find(v => v.lang === 'zh-HK' || v.lang === 'yue-Hant-HK');
+                if (hkVoice) utterance.voice = hkVoice;
+            }
+            
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // --- 嚴格校對後的題庫 ---
+        const ALL_DATA = {
+            easy: [
+                { emoji: '🐶', noun: '狗', ans: '隻', opts: ['隻', '條', '個', '把'], msg: '汪汪！我係一隻小狗' },
+                { emoji: '🍎', noun: '蘋果', ans: '個', opts: ['個', '條', '隻', '張'], msg: '紅卜卜，一個蘋果' },
+                { emoji: '🌸', noun: '花', ans: '朵', opts: ['朵', '棵', '隻', '把'], msg: '好香呀，一朵花' },
+                { emoji: '🐱', noun: '貓', ans: '隻', opts: ['隻', '把', '條', '個'], msg: '喵喵！我係一隻小貓' },
+                { emoji: '🐟', noun: '魚', ans: '條', opts: ['條', '隻', '個', '杯'], msg: '游水好叻，一條魚' },
+                { emoji: '📖', noun: '書', ans: '本', opts: ['本', '隻', '個', '朵'], msg: '一齊睇一本故事書' },
+                { emoji: '🚗', noun: '車', ans: '輛', opts: ['輛', '隻', '條', '個'], msg: '嘟嘟！開車囉' },
+                { emoji: '🏠', noun: '屋', ans: '間', opts: ['間', '個', '隻', '張'], msg: '我哋住喺一間屋' },
+                { emoji: '✏️', noun: '筆', ans: '支', opts: ['支', '條', '個', '本'], msg: '用一支筆畫畫' },
+                { emoji: '🌳', noun: '樹', ans: '棵', opts: ['棵', '朵', '隻', '條'], msg: '高高的一棵樹' }
+            ],
+            medium: [
+                { emoji: '🐘', noun: '大象', ans: '隻', opts: ['隻', '個', '條', '把'], msg: '長長鼻子的大象' },
+                { emoji: '👟', noun: '鞋', ans: '對', opts: ['對', '隻', '條', '個'], msg: '著好一對鞋' },
+                { emoji: '📸', noun: '相片', ans: '張', opts: ['張', '幅', '個', '本'], msg: '笑一笑，影張相' },
+                { emoji: '🍌', noun: '香蕉', ans: '條', opts: ['條', '個', '隻', '支'], msg: '黃色彎彎的香蕉' },
+                { emoji: '🎵', noun: '歌', ans: '首', opts: ['首', '條', '個', '支'], msg: '一齊唱首歌' },
+                { emoji: '🌂', noun: '雨傘', ans: '把', opts: ['把', '支', '條', '個'], msg: '落雨要擔一把遮' },
+                { emoji: '👕', noun: '衫', ans: '件', opts: ['件', '條', '隻', '對'], msg: '換一件乾淨衫' },
+                { emoji: '🚪', noun: '門', ans: '道', opts: ['道', '塊', '個', '間'], msg: '推開這道門' },
+                { emoji: '🌙', noun: '月亮', ans: '個', opts: ['個', '隻', '塊', '朵'], msg: '天空有一個月亮' },
+                { emoji: '🐎', noun: '馬', ans: '匹', opts: ['匹', '個', '條', '架'], msg: '跑得好快的一匹馬' }
+            ],
+            hard: [
+                { emoji: '⛰️', noun: '山', ans: '座', opts: ['座', '個', '條', '隻'], msg: '好高的一座大山' },
+                { emoji: '🌉', noun: '橋', ans: '條', opts: ['條', '塊', '把', '個'], msg: '行過一條長長的橋' },
+                { emoji: '💎', noun: '鑽石', ans: '粒', opts: ['粒', '隻', '個', '塊'], msg: '閃閃發光的一粒鑽石' },
+                { emoji: '🎹', noun: '鋼琴', ans: '部', opts: ['部', '隻', '條', '個'], msg: '彈奏一部鋼琴' },
+                { emoji: '🪞', noun: '鏡', ans: '塊', opts: ['塊', '個', '隻', '條'], msg: '照下自己，一塊鏡' },
+                { emoji: '🧣', noun: '頸巾', ans: '條', opts: ['條', '件', '隻', '個'], msg: '好暖的一條頸巾' },
+                { emoji: '📰', noun: '報紙', ans: '份', opts: ['份', '隻', '本', '個'], msg: '爸爸睇一份報紙' },
+                { emoji: '🌊', noun: '河', ans: '條', opts: ['條', '隻', '座', '個'], msg: '水聲嘩嘩的一條河' },
+                { emoji: '🕯️', noun: '蠟燭', ans: '支', opts: ['支', '條', '把', '個'], msg: '點起一支蠟燭' },
+                { emoji: '🏫', noun: '學校', ans: '間', opts: ['間', '隻', '座', '個'], msg: '快樂返學，一間學校' }
+            ]
+        };
+
+        let state = {
+            lvl: 'easy',
+            questions: [],
+            currIdx: 0,
+            score: 0,
+            answered: false,
+            audioCtx: null
+        };
+
+        // --- 可愛音效系統 ---
+        function playTone(freq, type = 'sine', duration = 0.3) {
+            if (!state.audioCtx) state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const ctx = state.audioCtx;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, ctx.currentTime);
+            gain.gain.setValueAtTime(0.3, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + duration);
+        }
+
+        function playSuccess() {
+            playTone(659.25, 'sine', 0.15); // E5
+            setTimeout(() => playTone(880.00, 'sine', 0.3), 100); // A5
+        }
+
+        function playFail() {
+            playTone(349.23, 'triangle', 0.2); // F4
+            setTimeout(() => playTone(329.63, 'triangle', 0.3), 150); // E4
+        }
+
+        // --- 遊戲邏輯 ---
+        function setLvl(lvl, el) {
+            state.lvl = lvl;
+            document.querySelectorAll('.lvl-btn').forEach(p => p.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        window.onload = () => {
+            document.getElementById('start-screen').style.display = 'block';
+        };
+
+        function initGame() {
+            // 初始化語音引擎 (為了解決 iOS Safari 必須要有用戶互動才能發聲的限制)
+            if ('speechSynthesis' in window) {
+                let u = new SpeechSynthesisUtterance('');
+                window.speechSynthesis.speak(u);
+            }
+
+            state.questions = [...ALL_DATA[state.lvl]].sort(() => Math.random() - 0.5).slice(0, 10);
+            state.currIdx = 0;
+            state.score = 0;
+            
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            
+            updateProgress();
+            renderQ();
+        }
+
+        function updateProgress() {
+            const percent = ((state.currIdx) / 10) * 100;
+            document.getElementById('progress-fill').style.width = `${percent}%`;
+        }
+
+        function renderQ() {
+            state.answered = false;
+            const q = state.questions[state.currIdx];
+            
+            document.getElementById('curr-idx').innerText = state.currIdx + 1;
+            document.getElementById('display-emoji').innerText = q.emoji;
+            document.getElementById('display-noun').innerText = q.noun;
+            
+            const blank = document.getElementById('blank-text');
+            blank.innerText = '？';
+            blank.style.color = '#94A3B8';
+            blank.style.borderBottomStyle = 'dashed';
+            
+            // 設定問題語音按鈕
+            const qPrompt = `一咩${q.noun}呀？`;
+            document.getElementById('btn-speak-q').onclick = () => speakCantonese(qPrompt);
+            
+            const options = [...q.opts].sort(() => Math.random() - 0.5);
+            const grid = document.getElementById('options');
+            grid.innerHTML = '';
+            
+            options.forEach((opt) => {
+                const btn = document.createElement('button');
+                btn.className = 'opt-btn';
+                btn.innerText = opt;
+                btn.onclick = () => {
+                    // 點擊選項時先讀出該字
+                    speakCantonese(opt);
+                    handleAns(opt, btn);
+                };
+                grid.appendChild(btn);
+            });
+
+            // 重新觸發動畫
+            const emoji = document.getElementById('display-emoji');
+            emoji.style.animation = 'none';
+            void emoji.offsetHeight;
+            emoji.style.animation = 'popInEmoji 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            
+            updateProgress();
+
+            // 延遲 0.5 秒自動朗讀題目，讓小朋友更容易進入狀態
+            setTimeout(() => {
+                if (!state.answered) speakCantonese(qPrompt);
+            }, 500);
+        }
+
+        function handleAns(choice, btn) {
+            if (state.answered) return;
+            state.answered = true;
+            
+            const q = state.questions[state.currIdx];
+            const isCorrect = (choice === q.ans);
+            const blank = document.getElementById('blank-text');
+            
+            blank.innerText = q.ans;
+            blank.style.borderBottomStyle = 'solid';
+            
+            if (isCorrect) {
+                state.score += 10;
+                btn.classList.add('correct');
+                blank.style.color = '#166534';
+                blank.style.borderColor = '#22C55E';
+                document.getElementById('score').innerText = state.score;
+                playSuccess();
+            } else {
+                btn.classList.add('wrong');
+                blank.style.color = '#991B1B';
+                blank.style.borderColor = '#F43F5E';
+                playFail();
+                // 標示出正確答案
+                document.querySelectorAll('.opt-btn').forEach(b => {
+                    if (b.innerText === q.ans) b.classList.add('correct');
+                });
+            }
+
+            // 延遲彈出反饋畫面，留時間給音效播放
+            setTimeout(() => { showFeedback(isCorrect, q); }, 800);
+        }
+
+        function showFeedback(isCorrect, q) {
+            const overlay = document.getElementById('feedback-overlay');
+            
+            document.getElementById('fb-icon').innerText = isCorrect ? '🌟' : '🦉';
+            document.getElementById('fb-title').innerText = isCorrect ? '嘩！答啱咗啦！' : '差少少咋，睇下正確答案！';
+            document.getElementById('fb-title').style.color = isCorrect ? 'var(--orange)' : 'var(--blue)';
+            
+            document.getElementById('fb-ans').innerText = q.ans;
+            document.getElementById('fb-ans').style.color = isCorrect ? 'var(--green)' : 'var(--pink)';
+            document.getElementById('fb-noun').innerText = q.noun;
+            
+            document.getElementById('fb-msg').innerText = q.msg;
+            
+            // 設定反饋語音內容並自動播放
+            const fullSentence = `一${q.ans}${q.noun}`;
+            const feedbackSpeech = (isCorrect ? "答啱啦！" : "差少少咋！") + q.msg;
+            
+            document.getElementById('btn-speak-fb').onclick = () => speakCantonese(fullSentence);
+            speakCantonese(feedbackSpeech); // 自動播放解說
+
+            overlay.classList.add('show');
+            if (isCorrect) createConfetti();
+        }
+
+        function closeFeedback() {
+            document.getElementById('feedback-overlay').classList.remove('show');
+            window.speechSynthesis.cancel(); // 關閉彈窗時停止語音
+            
+            state.currIdx++;
+            
+            if (state.currIdx < 10) {
+                renderQ();
+            } else {
+                document.getElementById('progress-fill').style.width = `100%`;
+                setTimeout(showFinalResult, 500);
+            }
+        }
+
+        function showFinalResult() {
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('result-screen').style.display = 'block';
+            
+            const score = state.score;
+            document.getElementById('res-score').innerText = score;
+            
+            let icon, title, desc, stars, finalSpeech;
+            if (score >= 90) {
+                icon = '👑'; title = '超級量詞大師！'; desc = '好犀利呀！全部都識晒！'; stars = '⭐⭐⭐';
+                finalSpeech = '好犀利呀！你係超級量詞大師！';
+            } else if (score >= 60) {
+                icon = '🌟'; title = '好叻呀！'; desc = '做得好！再玩一次挑戰滿分啦！'; stars = '⭐⭐';
+                finalSpeech = '好叻呀！再玩一次挑戰滿分啦！';
+            } else {
+                icon = '🦉'; title = '繼續加油！'; desc = '小貓頭鷹陪你再練習多幾次！'; stars = '⭐';
+                finalSpeech = '繼續加油！小貓頭鷹陪你再練習多幾次！';
+            }
+            
+            document.getElementById('res-icon').innerText = icon;
+            document.getElementById('res-title').innerText = title;
+            document.getElementById('res-desc').innerText = desc;
+            document.getElementById('res-stars').innerText = stars;
+            
+            speakCantonese(finalSpeech); // 結算時用語音鼓勵小朋友
+
+            if (score >= 60) {
+                for(let i=0; i<3; i++) setTimeout(createConfetti, i*500);
+            }
+        }
+
+        function createConfetti() {
+            for (let i = 0; i < 30; i++) {
+                const c = document.createElement('div');
+                c.style.position = 'fixed';
+                c.style.left = Math.random() * 100 + 'vw';
+                c.style.top = '-20px';
+                c.style.width = (Math.random() * 10 + 8) + 'px';
+                c.style.height = (Math.random() * 8 + 8) + 'px';
+                c.style.backgroundColor = ['#FF8EAF','#FFD93D','#4FBFFF','#4ADE80','#B794F4'][Math.floor(Math.random()*5)];
+                c.style.borderRadius = Math.random() > 0.5 ? '50%' : '4px';
+                c.style.zIndex = '200';
+                c.style.pointerEvents = 'none';
+                document.body.appendChild(c);
+                
+                const anim = c.animate([
+                    { transform: 'translateY(0) rotate(0)', opacity: 1 },
+                    { transform: `translateY(110vh) translateX(${Math.random()*100-50}px) rotate(${Math.random()*720}deg)`, opacity: 0 }
+                ], { duration: 1500 + Math.random() * 1500, easing: 'ease-out' });
+                
+                anim.onfinish = () => c.remove();
+            }
+        }
+    </script>
+</body>
+</html>
